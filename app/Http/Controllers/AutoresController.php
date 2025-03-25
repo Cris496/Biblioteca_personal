@@ -38,7 +38,10 @@ class AutoresController extends Controller
         $datosAutores = request()->except('_token');
         Autores::insert($datosAutores);
 
-        return response()->json($datosAutores);
+        //return response()->json($datosAutores);
+
+        return redirect('autores')->with('mensaje','Autor agregado con exito');
+
     }
 
     /**
@@ -52,18 +55,30 @@ class AutoresController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Autores $autores)
+    public function edit($id)
     {
         //
+        $autores=Autores::findOrFail($id);
+
+        return view('autores.edit',compact('autores'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Autores $autores)
+    public function update(Request $request, $id)
     {
         //
-    }
+        $datosAutores = request()->except(['_token','_method']);
+        Autores::where('id','=', $id)->update($datosAutores);
+
+        $autores=Autores::findOrFail($id);
+        return view('autores.edit',compact('autores'));
+
+
+
+
+        }
 
     /**
      * Remove the specified resource from storage.
