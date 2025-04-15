@@ -15,4 +15,6 @@ Route::get('/autores', function () {
 Route::get('/autores/create',[AutoresController::class,'create']);
 */
 Route::resource('autores', AutoresController::class);
-
+Route::get('/dashboard', function () {
+    return view('dashboard');
+});
