@@ -3,68 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Codexa | Mi Biblioteca Personal</title>
+    <title>Codexa | Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        :root {
-            --color-bg: rgb(0, 0, 0);
-            --color-card: rgba(0, 0, 0, 0.8);
-            --color-accent: #D4AF37;
-            --color-text: #e8e8e8;
-            --color-text-light: #aaaaaa;
-            --color-border: #252525;
-            --color-completed: #28a745;
-            --color-inprogress: #ffc107;
-            --color-notstarted: #6c757d;
+        /* RESET Y ESTILOS GENERALES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
-            font-family: 'Playfair Display', serif;
-            color: var(--color-text);
+            font-family: 'Montserrat', sans-serif;
+            background-color: #000;
+            color: #fff;
             min-height: 100vh;
-            padding: 2rem;
-            margin: 0;
             overflow-x: hidden;
-            position: relative;
+            line-height: 1.6;
         }
         
-        /* Fondo con partículas */
-        #particles-js {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            background-color: var(--color-bg);
+        .gold-text {
+            color: #FFD700;
+            font-weight: 600;
         }
         
-        .dashboard-container {
-            max-width: 1200px;
-            background: var(--color-card);
-            padding: 2.5rem;
-            border-radius: 8px;
-            margin: 2rem auto;
-            border: 1px solid var(--color-border);
-            backdrop-filter: blur(4px);
-            position: relative;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.1);
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
         }
         
-        /* Sistema de animaciones coordinadas */
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+
+        /* ANIMACIONES */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
         @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
         
-        @keyframes fadeIn {
-            to { opacity: 1; }
+        @keyframes loading {
+            0% { background-position: -200px 0; }
+            100% { background-position: 200px 0; }
         }
         
         @keyframes slideInFromRight {
@@ -74,197 +68,416 @@
             }
         }
         
-        .logo-container {
-            text-align: center;
-            margin-bottom: 2rem;
-            opacity: 0;
-            animation: fadeIn 0.8s ease-out forwards;
-            animation-delay: 0.3s;
-        }
-        
-        .logo-container img {
-            max-width: 110px;
-            transition: transform 0.6s ease;
-        }
-        
-        .logo-container:hover img {
-            transform: rotate(-5deg) scale(1.05);
-        }
-        
-        .logo-container p {
-            color: var(--color-accent);
-            font-size: 1rem;
-            margin-top: 0.5rem;
-            opacity: 0;
-            animation: fadeIn 0.8s ease-out forwards;
-            animation-delay: 0.5s;
-        }
-        
-        .page-title {
-            color: var(--color-text);
-            font-weight: 500;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            position: relative;
-            font-size: 1.8rem;
-            opacity: 0;
-            animation: fadeIn 0.8s ease-out forwards;
-            animation-delay: 0.7s;
-        }
-        
-        .page-title:after {
-            content: '';
-            display: block;
-            width: 60px;
-            height: 2px;
-            background: var(--color-accent);
-            margin: 0.8rem auto 0;
-            transform: scaleX(0);
-            transform-origin: left;
-            animation: scaleIn 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-            animation-delay: 1s;
-        }
-        
         @keyframes scaleIn {
             to { transform: scaleX(1); }
         }
+
+        /* PRELOADER */
+        .loading-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
         
-        /* Botones con diseño original y animación coordinada */
+        .gold-bar {
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, #000, #FFD700, #000);
+            position: relative;
+            overflow: hidden;
+            animation: loading 1.5s infinite;
+        }
+
+        /* HEADER */
+        .main-header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 15px 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            background-color: rgba(0, 0, 0, 0.9);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header-content {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        /* BOTONES PRINCIPALES (Mismo estilo del dashboard original) */
         .btn-gold {
-            background: var(--color-accent);
+            display: inline-block;
+            padding: 0.6rem 1.8rem;
+            background: #FFD700;
             color: #000;
             border: none;
-            padding: 0.6rem 1.8rem;
-            font-weight: 500;
+            border-radius: 4px;
+            font-weight: 600;
             letter-spacing: 0.5px;
             transition: all 0.3s ease;
-            border-radius: 4px;
-            opacity: 0;
-            transform: translateY(10px);
-            animation: fadeInUp 0.6s ease-out forwards;
-            animation-delay: 1.1s;
+            text-decoration: none;
+            font-size: 14px;
         }
         
         .btn-gold:hover {
             background: transparent;
-            color: var(--color-accent);
-            border: 1px solid var(--color-accent);
-            transform: translateY(-2px) scale(1.02);
+            color: #FFD700;
+            border: 1px solid #FFD700;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
         }
         
-        .btn-secondary-custom {
-            background: transparent;
-            color: var(--color-text);
-            border: 1px solid var(--color-text-light);
+        .btn-outline {
+            display: inline-block;
             padding: 0.6rem 1.8rem;
-            font-weight: 500;
+            background: transparent;
+            color: #FFD700;
+            border: 1px solid #FFD700;
+            border-radius: 4px;
+            font-weight: 600;
             letter-spacing: 0.5px;
             transition: all 0.3s ease;
-            border-radius: 4px;
-            opacity: 0;
-            transform: translateY(10px);
-            animation: fadeInUp 0.6s ease-out forwards;
-            animation-delay: 1.3s;
+            text-decoration: none;
+            font-size: 14px;
         }
         
-        .btn-secondary-custom:hover {
-            border-color: var(--color-accent);
-            color: var(--color-accent);
+        .btn-outline:hover {
+            background: #FFD700;
+            color: #000;
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        /* DASHBOARD CONTAINER */
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 80px auto 40px;
+            padding: 0 20px;
+        }
+
+        /* SECCIÓN HERO */
+        .dashboard-hero {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 0;
+            position: relative;
         }
         
-        /* Cards de métricas */
+        .dashboard-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.3s;
+        }
+        
+        .dashboard-hero p {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 700px;
+            margin: 0 auto 30px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.5s;
+        }
+        
+        .dashboard-hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.7s;
+        }
+
+        /* SECCIÓN DE MÉTRICAS */
+        .metrics-section {
+            margin-bottom: 50px;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .section-header h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-header h2:after {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 2px;
+            background: #FFD700;
+            bottom: -8px;
+            left: 25%;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
         .metric-card {
-            background: rgba(212, 175, 55, 0.05);
-            border: 1px solid var(--color-border);
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.1);
             border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
+            padding: 25px;
+            text-align: center;
             transition: all 0.3s ease;
             opacity: 0;
             transform: translateY(20px);
             animation: fadeInUp 0.6s ease-out forwards;
         }
+        
+        .metric-card:nth-child(1) { animation-delay: 0.3s; }
+        .metric-card:nth-child(2) { animation-delay: 0.4s; }
+        .metric-card:nth-child(3) { animation-delay: 0.5s; }
         
         .metric-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.1);
-            border-color: var(--color-accent);
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.1);
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+        
+        .metric-icon {
+            font-size: 2rem;
+            color: #FFD700;
+            margin-bottom: 15px;
         }
         
         .metric-title {
-            color: var(--color-text-light);
-            font-size: 0.9rem;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 0.5rem;
         }
         
         .metric-value {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 15px;
         }
         
         .metric-completed .metric-value {
-            color: var(--color-completed);
+            color: #4CAF50;
         }
         
         .metric-inprogress .metric-value {
-            color: var(--color-inprogress);
+            color: #FFD700;
         }
         
         .metric-notstarted .metric-value {
-            color: var(--color-notstarted);
+            color: rgba(255, 255, 255, 0.5);
         }
         
-        /* Gráficos */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            transition: width 0.6s ease;
+        }
+        
+        .progress-completed {
+            background: #4CAF50;
+        }
+        
+        .progress-inprogress {
+            background: #FFD700;
+        }
+        
+        .progress-notstarted {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* SECCIÓN DE GRÁFICOS */
+        .charts-section {
+            margin-bottom: 50px;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+        
+        @media (min-width: 992px) {
+            .charts-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+        
         .chart-container {
-            background: rgba(212, 175, 55, 0.05);
-            border: 1px solid var(--color-border);
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.1);
             border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            height: 350px;
+            padding: 25px;
+            transition: all 0.3s ease;
             opacity: 0;
             transform: translateY(20px);
             animation: fadeInUp 0.6s ease-out forwards;
         }
         
+        .chart-container:nth-child(1) { animation-delay: 0.4s; }
+        .chart-container:nth-child(2) { animation-delay: 0.5s; }
+        
         .chart-container:hover {
-            border-color: var(--color-accent);
+            border-color: rgba(255, 215, 0, 0.3);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.1);
         }
         
         .chart-title {
-            color: var(--color-text);
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
         }
         
-        /* Tabla con animaciones coordinadas */
+        .chart-title i {
+            margin-right: 10px;
+            color: #FFD700;
+        }
+        
+        .chart {
+            height: 300px;
+        }
+        
+        .last-books-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .last-book-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .last-book-item:hover {
+            background: rgba(255, 215, 0, 0.05);
+        }
+        
+        .last-book-cover {
+            width: 50px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        .last-book-info {
+            flex: 1;
+        }
+        
+        .last-book-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .last-book-author {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .badge-status {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge-completed {
+            background: rgba(40, 167, 69, 0.2);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+
+        /* SECCIÓN DE TABLA */
+        .table-section {
+            margin-bottom: 50px;
+        }
+        
+        .table-container {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            border-radius: 8px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease-out forwards;
+            animation-delay: 0.6s;
+            overflow-x: auto;
+        }
+        
+        .table-container:hover {
+            border-color: rgba(255, 215, 0, 0.3);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.1);
+        }
+        
         .table-custom {
             width: 100%;
-            margin-top: 1.5rem;
-            color: var(--color-text);
             border-collapse: separate;
             border-spacing: 0;
+            color: #fff;
         }
         
         .table-custom thead th {
-            background: rgba(212, 175, 55, 0.1);
-            color: var(--color-accent);
-            font-weight: 500;
-            padding: 1rem;
+            background: rgba(255, 215, 0, 0.1);
+            color: #FFD700;
+            font-weight: 600;
+            padding: 15px;
             text-transform: uppercase;
             font-size: 0.75rem;
             letter-spacing: 1px;
             border: none;
-            border-bottom: 1px solid var(--color-border);
-            opacity: 0;
-            animation: fadeIn 0.6s ease-out forwards;
-            animation-delay: 1.3s;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
         }
         
         .table-custom tbody tr {
@@ -273,388 +486,377 @@
             animation: slideInFromRight 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
         }
         
-        .table-custom tbody tr:nth-child(1) { animation-delay: 1.4s; }
-        .table-custom tbody tr:nth-child(2) { animation-delay: 1.5s; }
-        .table-custom tbody tr:nth-child(3) { animation-delay: 1.6s; }
-        .table-custom tbody tr:nth-child(4) { animation-delay: 1.7s; }
-        .table-custom tbody tr:nth-child(5) { animation-delay: 1.8s; }
+        .table-custom tbody tr:nth-child(1) { animation-delay: 0.7s; }
+        .table-custom tbody tr:nth-child(2) { animation-delay: 0.8s; }
+        .table-custom tbody tr:nth-child(3) { animation-delay: 0.9s; }
+        .table-custom tbody tr:nth-child(4) { animation-delay: 1.0s; }
+        .table-custom tbody tr:nth-child(5) { animation-delay: 1.1s; }
         
         .table-custom tbody td {
-            padding: 1.2rem 1rem;
-            border-bottom: 1px solid var(--color-border);
-            background: var(--color-card);
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             vertical-align: middle;
             transition: all 0.3s ease;
         }
         
         .table-custom tbody tr:hover td {
-            background: rgba(212, 175, 55, 0.03);
-            transform: translateX(5px);
+            background: rgba(255, 215, 0, 0.03);
         }
         
-        /* Status badges */
-        .badge-status {
-            padding: 0.35rem 0.65rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
+        .book-title {
             font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         
-        .badge-completed {
-            background: rgba(40, 167, 69, 0.2);
-            color: var(--color-completed);
-            border: 1px solid var(--color-completed);
+        .book-author {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
         }
         
         .badge-inprogress {
-            background: rgba(255, 193, 7, 0.2);
-            color: var(--color-inprogress);
-            border: 1px solid var(--color-inprogress);
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+            border: 1px solid #FFD700;
         }
         
         .badge-notstarted {
-            background: rgba(108, 117, 125, 0.2);
-            color: var(--color-notstarted);
-            border: 1px solid var(--color-notstarted);
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        /* Alertas con animación coordinada */
-        .alert-message {
-            background: rgba(212, 175, 55, 0.1);
-            color: var(--color-accent);
-            border: 1px solid var(--color-accent);
-            padding: 1rem;
-            margin-bottom: 2rem;
-            text-align: center;
-            border-radius: 4px;
-            opacity: 0;
-            animation: fadeIn 0.8s ease-out forwards;
-            animation-delay: 0.9s;
+        .table-progress-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-bottom: 5px;
         }
         
-        .icon {
-            margin-right: 6px;
-            transition: transform 0.3s ease;
+        .table-progress-bar {
+            height: 100%;
+            border-radius: 3px;
         }
         
-        .btn-action:hover .icon {
-            transform: scale(1.1);
+        .table-progress-text {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
         }
         
-        /* Botones de acción en tabla */
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
         .btn-table {
-            padding: 0.4rem 0.8rem;
+            padding: 0.5rem 1rem;
             font-size: 0.85rem;
-            margin-right: 0.5rem;
             border-radius: 4px;
-            transition: all 0.2s ease;
-            text-decoration: none;
+            font-weight: 500;
             display: inline-flex;
             align-items: center;
+            transition: all 0.3s ease;
         }
         
         .btn-table-primary {
-            background: var(--color-accent);
+            background: #FFD700;
             color: #000;
-            border: 1px solid var(--color-accent);
-        }
-        
-        .btn-table-secondary {
-            background: transparent;
-            color: var(--color-text-light);
-            border: 1px solid var(--color-text-light);
+            border: 1px solid #FFD700;
         }
         
         .btn-table-primary:hover {
             background: transparent;
-            color: var(--color-accent);
+            color: #FFD700;
+        }
+        
+        .btn-table-secondary {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         
         .btn-table-secondary:hover {
-            color: var(--color-accent);
-            border-color: var(--color-accent);
+            color: #FFD700;
+            border-color: #FFD700;
         }
         
-        /* Barra de progreso */
-        .progress-container {
-            width: 100%;
-            background-color: var(--color-border);
-            border-radius: 4px;
-            margin: 0.5rem 0;
-            height: 8px;
+        .btn-table i {
+            margin-right: 5px;
+            font-size: 0.9rem;
+        }
+
+        /* FOOTER */
+        .main-footer {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px 0;
+            border-top: 1px solid rgba(255, 215, 0, 0.1);
         }
         
-        .progress-bar {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.6s ease;
+        .footer-content {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
         }
         
-        .progress-completed {
-            background-color: var(--color-completed);
+        .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            margin-bottom: 15px;
         }
         
-        .progress-inprogress {
-            background-color: var(--color-inprogress);
+        .footer-text {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
         }
         
-        /* Responsive */
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .social-icons a {
+            color: #fff;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            color: #FFD700;
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* RESPONSIVE */
         @media (max-width: 768px) {
-            body {
-                padding: 1rem;
+            .dashboard-hero h1 {
+                font-size: 2rem;
             }
             
-            .dashboard-container {
-                padding: 1.5rem;
+            .dashboard-hero p {
+                font-size: 1rem;
             }
             
-            .metric-card {
-                padding: 1rem;
+            .metrics-grid {
+                grid-template-columns: 1fr;
             }
             
             .chart-container {
-                height: 250px;
+                padding: 15px;
+            }
+            
+            .table-container {
+                padding: 15px;
+            }
+            
+            .table-custom thead {
+                display: none;
+            }
+            
+            .table-custom tbody tr {
+                display: block;
+                margin-bottom: 15px;
+                border: 1px solid rgba(255, 215, 0, 0.1);
+                border-radius: 6px;
+            }
+            
+            .table-custom tbody td {
+                display: block;
+                text-align: right;
+                padding: 10px 15px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            
+            .table-custom tbody td:before {
+                content: attr(data-label);
+                float: left;
+                font-weight: 600;
+                color: #FFD700;
+                text-transform: uppercase;
+                font-size: 0.75rem;
+            }
+            
+            .table-actions {
+                justify-content: flex-end;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Fondo de partículas -->
-    <div id="particles-js"></div>
+    <!-- Preloader -->
+    <div class="loading-animation">
+        <div class="gold-bar"></div>
+    </div>
     
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="gold-text">COD</span>EXA
+            </div>
+            <div>
+                <a href="#" class="btn-outline">Cerrar sesion</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Container -->
     <div class="dashboard-container">
-        <!-- Encabezado con logo -->
-        <div class="logo-container">
-            <img src="{{ asset('codexa.png') }}" alt="Codexa Logo">
-            <p>Mi Biblioteca Personal</p>
-        </div>
-        
-        <!-- Título de página -->
-        <h1 class="page-title">Mi Progreso de Lectura</h1>
-        
-        <!-- Mensajes flash -->
-        @if(Session::has('mensaje'))
-            <div class="alert-message">
-                {{ Session::get('mensaje') }}
+        <!-- Hero Section -->
+        <section class="dashboard-hero">
+            <h1>Bienvenido a tu <span class="gold-text">Biblioteca Personal</span></h1>
+            <p>Gestiona y sigue tu progreso de lectura con esta herramienta diseñada para amantes de los libros</p>
+            <div class="dashboard-hero-buttons">
+                <a href="#" class="btn-gold">
+                    <i class="fas fa-plus"></i> Libros
+                </a>
+                <a href="#" class="btn-outline">
+                    <i class="fas fa-search"></i> Estanteria
+                </a>
             </div>
-        @endif
-        
-        <!-- Sección de métricas -->
-        <div class="row">
-            <div class="col-md-4">
-                <div class="metric-card metric-completed" style="animation-delay: 0.3s">
+        </section>
+
+        <!-- Metrics Section -->
+        <section class="metrics-section">
+            <div class="section-header">
+                <h2>Tus <span class="gold-text">Estadísticas</span></h2>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric-card metric-completed">
+                    <div class="metric-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
                     <div class="metric-title">Libros Completados</div>
-                    <div class="metric-value" id="completed-count">0</div>
+                    <div class="metric-value" id="completed-count">24</div>
                     <div class="progress-container">
-                        <div class="progress-bar progress-completed" id="completed-progress" style="width: 0%"></div>
+                        <div class="progress-bar progress-completed" style="width: 60%"></div>
+                    </div>
+                </div>
+                <div class="metric-card metric-inprogress">
+                    <div class="metric-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="metric-title">En Progreso</div>
+                    <div class="metric-value" id="inprogress-count">8</div>
+                    <div class="progress-container">
+                        <div class="progress-bar progress-inprogress" style="width: 20%"></div>
+                    </div>
+                </div>
+                <div class="metric-card metric-notstarted">
+                    <div class="metric-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="metric-title">Por Leer</div>
+                    <div class="metric-value" id="notstarted-count">8</div>
+                    <div class="progress-container">
+                        <div class="progress-bar progress-notstarted" style="width: 20%"></div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="metric-card metric-inprogress" style="animation-delay: 0.4s">
-                    <div class="metric-title">Libros en Progreso</div>
-                    <div class="metric-value" id="inprogress-count">0</div>
-                    <div class="progress-container">
-                        <div class="progress-bar progress-inprogress" id="inprogress-progress" style="width: 0%"></div>
-                    </div>
-                </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="charts-section">
+            <div class="section-header">
+                <h2>Tu <span class="gold-text">Progreso</span></h2>
             </div>
-            <div class="col-md-4">
-                <div class="metric-card metric-notstarted" style="animation-delay: 0.5s">
-                    <div class="metric-title">Libros por Empezar</div>
-                    <div class="metric-value" id="notstarted-count">0</div>
-                    <div class="progress-container">
-                        <div class="progress-bar" id="notstarted-progress" style="width: 0%; background-color: var(--color-notstarted)"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Sección de gráficos -->
-        <div class="row">
-            <div class="col-md-8">
-                <div class="chart-container" style="animation-delay: 0.6s">
+            <div class="charts-grid">
+                <div class="chart-container">
                     <div class="chart-title">
-                        <i class="fas fa-chart-pie icon"></i> Distribución de Mis Libros
+                        <i class="fas fa-chart-pie"></i> Distribución de Lectura
                     </div>
-                    <canvas id="booksDistributionChart"></canvas>
+                    <div class="chart" id="booksDistributionChart">
+                        <!-- Gráfico se insertará aquí -->
+                        <canvas style="width: 100%; height: 100%"></canvas>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="chart-container" style="animation-delay: 0.7s; height: auto; min-height: 350px;">
+                <div class="chart-container">
                     <div class="chart-title">
-                        <i class="fas fa-trophy icon"></i> Últimos Completados
+                        <i class="fas fa-trophy"></i> Últimos Completados
                     </div>
-                    <div id="last-completed-books" class="d-flex flex-column" style="gap: 1rem;">
-                        <!-- Aquí se cargarán dinámicamente los últimos libros completados -->
-                        <div class="text-center py-4">
-                            <i class="fas fa-spinner fa-spin"></i> Cargando...
+                    
+                        
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Sección de libros actuales -->
-        <div class="row">
-            <div class="col-12">
-                <div class="chart-container" style="animation-delay: 0.8s; height: auto;">
-                    <div class="chart-title">
-                        <i class="fas fa-book-open icon"></i> Mis Libros Actuales
-                    </div>
-                    <table class="table-custom">
-                        <thead>
-                            <tr>
-                                <th>Libro</th>
-                                <th>Autor</th>
-                                <th>Estado</th>
-                                <th>Progreso</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="current-books-table">
-                            <!-- Aquí se cargarán dinámicamente los libros actuales -->
-                            <tr>
-                                <td colspan="5" class="text-center py-4">
-                                    <i class="fas fa-spinner fa-spin"></i> Cargando...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+        </section>
+
+        <!-- Table Section -->
+        <section class="table-section">
+            <div class="section-header">
+                <h2>Tus <span class="gold-text">Libros Actuales</span></h2>
             </div>
-        </div>
-        
-        <!-- Botones de acción -->
-        <div class="text-center mt-4">
-            <a href="#" class="btn-gold" style="animation-delay: 0.9s" id="go-to-book-btn">
-                <i class="fas fa-book icon"></i> Ir a Libro
-            </a>
-            <a href="#" class="btn-secondary-custom" style="animation-delay: 1.0s" id="go-to-shelf-btn">
-                <i class="fas fa-archive icon"></i> Ir a Estantería
-            </a>
-        </div>
+            <div class="table-container">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>Libro</th>
+                            <th>Autor</th>
+                            <th>Estado</th>
+                            <th>Progreso</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
 
-    <!-- Scripts para partículas -->
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <span class="gold-text">COD</span>EXA
+            </div>
+            <p class="footer-text">Tu biblioteca personal elegante y sofisticada</p>
+            <div class="social-icons">
+               
+            </div>
+            <p class="copyright">© 2023 Codexa. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            particlesJS('particles-js', {
-                "particles": {
-                    "number": {
-                        "value": 60,
-                        "density": {
-                            "enable": true,
-                            "value_area": 800
-                        }
-                    },
-                    "color": {
-                        "value": "#D4AF37"
-                    },
-                    "shape": {
-                        "type": "circle",
-                        "stroke": {
-                            "width": 0,
-                            "color": "#000000"
-                        }
-                    },
-                    "opacity": {
-                        "value": 0.5,
-                        "random": true,
-                        "anim": {
-                            "enable": true,
-                            "speed": 1,
-                            "opacity_min": 0.1,
-                            "sync": false
-                        }
-                    },
-                    "size": {
-                        "value": 3,
-                        "random": true,
-                        "anim": {
-                            "enable": true,
-                            "speed": 2,
-                            "size_min": 0.1,
-                            "sync": false
-                        }
-                    },
-                    "line_linked": {
-                        "enable": true,
-                        "distance": 150,
-                        "color": "#D4AF37",
-                        "opacity": 0.3,
-                        "width": 1
-                    },
-                    "move": {
-                        "enable": true,
-                        "speed": 1,
-                        "direction": "none",
-                        "random": true,
-                        "straight": false,
-                        "out_mode": "out",
-                        "bounce": false,
-                        "attract": {
-                            "enable": true,
-                            "rotateX": 600,
-                            "rotateY": 1200
-                        }
-                    }
-                },
-                "interactivity": {
-                    "detect_on": "canvas",
-                    "events": {
-                        "onhover": {
-                            "enable": true,
-                            "mode": "grab"
-                        },
-                        "onclick": {
-                            "enable": true,
-                            "mode": "push"
-                        },
-                        "resize": true
-                    },
-                    "modes": {
-                        "grab": {
-                            "distance": 140,
-                            "line_linked": {
-                                "opacity": 0.8
-                            }
-                        },
-                        "push": {
-                            "particles_nb": 4
-                        }
-                    }
-                },
-                "retina_detect": true
-            });
-
-            // Coordinación adicional de animaciones
-            setTimeout(() => {
-                document.querySelector('.logo-container img').style.transform = 'rotate(-2deg)';
+            // Ocultar preloader
+            setTimeout(function() {
+                document.querySelector('.loading-animation').style.opacity = '0';
+                setTimeout(function() {
+                    document.querySelector('.loading-animation').style.display = 'none';
+                }, 500);
             }, 1500);
             
-            // Inicializar gráfico vacío (se actualizará con datos reales)
-            const distributionCtx = document.getElementById('booksDistributionChart').getContext('2d');
-            const distributionChart = new Chart(distributionCtx, {
+            // Inicializar gráfico
+            const ctx = document.querySelector('#booksDistributionChart canvas').getContext('2d');
+            const chart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Completados', 'En Progreso', 'Por Empezar'],
+                    labels: ['Completados', 'En Progreso', 'Por Leer'],
                     datasets: [{
-                        data: [0, 0, 0],
+                        data: [24, 8, 8],
                         backgroundColor: [
                             'rgba(40, 167, 69, 0.8)',
-                            'rgba(255, 193, 7, 0.8)',
-                            'rgba(108, 117, 125, 0.8)'
+                            'rgba(255, 215, 0, 0.8)',
+                            'rgba(255, 255, 255, 0.3)'
                         ],
                         borderColor: [
                             'rgba(40, 167, 69, 1)',
-                            'rgba(255, 193, 7, 1)',
-                            'rgba(108, 117, 125, 1)'
+                            'rgba(255, 215, 0, 1)',
+                            'rgba(255, 255, 255, 0.5)'
                         ],
                         borderWidth: 1
                     }]
@@ -666,8 +868,11 @@
                         legend: {
                             position: 'right',
                             labels: {
-                                color: '#e8e8e8',
-                                padding: 20
+                                color: '#fff',
+                                padding: 20,
+                                font: {
+                                    family: 'Montserrat'
+                                }
                             }
                         },
                         tooltip: {
@@ -676,113 +881,33 @@
                                     const label = context.label || '';
                                     const value = context.raw || 0;
                                     const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                    const percentage = Math.round((value / total) * 100);
                                     return `${label}: ${value} (${percentage}%)`;
                                 }
                             }
                         }
                     },
-                    cutout: '60%'
+                    cutout: '70%'
                 }
             });
             
-            // Ejemplo de cómo cargar datos desde tu backend
-            // function loadDashboardData() {
-            //     fetch('/api/dashboard-data')
-            //         .then(response => response.json())
-            //         .then(data => {
-            //             // Actualizar métricas
-            //             document.getElementById('completed-count').textContent = data.completedCount;
-            //             document.getElementById('inprogress-count').textContent = data.inProgressCount;
-            //             document.getElementById('notstarted-count').textContent = data.notStartedCount;
-            //             
-            //             // Actualizar barras de progreso
-            //             const totalBooks = data.completedCount + data.inProgressCount + data.notStartedCount;
-            //             document.getElementById('completed-progress').style.width = `${(data.completedCount / totalBooks) * 100}%`;
-            //             document.getElementById('inprogress-progress').style.width = `${(data.inProgressCount / totalBooks) * 100}%`;
-            //             document.getElementById('notstarted-progress').style.width = `${(data.notStartedCount / totalBooks) * 100}%`;
-            //             
-            //             // Actualizar gráfico
-            //             distributionChart.data.datasets[0].data = [data.completedCount, data.inProgressCount, data.notStartedCount];
-            //             distributionChart.update();
-            //             
-            //             // Actualizar últimos libros completados
-            //             const lastCompletedContainer = document.getElementById('last-completed-books');
-            //             lastCompletedContainer.innerHTML = '';
-            //             
-            //             data.lastCompletedBooks.forEach(book => {
-            //                 const bookElement = document.createElement('div');
-            //                 bookElement.className = 'd-flex align-items-center';
-            //                 bookElement.innerHTML = `
-            //                     <img src="${book.coverUrl}" alt="Portada" style="width: 50px; height: 70px; object-fit: cover; border-radius: 4px; margin-right: 1rem;">
-            //                     <div>
-            //                         <div style="font-weight: 500;">${book.title}</div>
-            //                         <div style="font-size: 0.8rem; color: var(--color-text-light);">${book.author}</div>
-            //                         <span class="badge-status badge-completed">Completado</span>
-            //                     </div>
-            //                 `;
-            //                 lastCompletedContainer.appendChild(bookElement);
-            //             });
-            //             
-            //             // Actualizar tabla de libros actuales
-            //             const currentBooksTable = document.getElementById('current-books-table');
-            //             currentBooksTable.innerHTML = '';
-            //             
-            //             data.currentBooks.forEach(book => {
-            //                 const row = document.createElement('tr');
-            //                 
-            //                 // Determinar clase de badge según estado
-            //                 let badgeClass, badgeText;
-            //                 if (book.status === 'completed') {
-            //                     badgeClass = 'badge-completed';
-            //                     badgeText = 'Completado';
-            //                 } else if (book.status === 'inprogress') {
-            //                     badgeClass = 'badge-inprogress';
-            //                     badgeText = 'En Progreso';
-            //                 } else {
-            //                     badgeClass = 'badge-notstarted';
-            //                     badgeText = 'Por Empezar';
-            //                 }
-            //                 
-            //                 row.innerHTML = `
-            //                     <td>${book.title}</td>
-            //                     <td>${book.author}</td>
-            //                     <td><span class="badge-status ${badgeClass}">${badgeText}</span></td>
-            //                     <td>
-            //                         <div class="progress-container">
-            //                             <div class="progress-bar ${book.status === 'completed' ? 'progress-completed' : book.status === 'inprogress' ? 'progress-inprogress' : ''}" 
-            //                                  style="width: ${book.progress}%; ${book.status === 'notstarted' ? 'background-color: var(--color-notstarted)' : ''}"></div>
-            //                         </div>
-            //                         <small>${book.progress}% completado</small>
-            //                     </td>
-            //                     <td>
-            //                         <a href="/books/${book.id}" class="btn-table btn-table-primary">
-            //                             <i class="fas fa-book icon"></i> Leer
-            //                         </a>
-            //                         <a href="/shelf/${book.shelfId}" class="btn-table btn-table-secondary">
-            //                             <i class="fas fa-archive icon"></i> Estantería
-            //                         </a>
-            //                     </td>
-            //                 `;
-            //                 
-            //                 currentBooksTable.appendChild(row);
-            //             });
-            //             
-            //             // Configurar enlaces de botones principales
-            //             document.getElementById('go-to-book-btn').href = data.firstInProgressBookUrl || '#';
-            //             document.getElementById('go-to-shelf-btn').href = data.defaultShelfUrl || '#';
-            //         })
-            //         .catch(error => {
-            //             console.error('Error al cargar datos del dashboard:', error);
-            //         });
-            // }
-            // 
-            // // Llamar a la función para cargar datos cuando la página esté lista
-            // loadDashboardData();
+            // Animaciones al hacer scroll
+            const animateOnScroll = function() {
+                const elements = document.querySelectorAll('.metric-card, .chart-container, .table-container');
+                elements.forEach(element => {
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const screenPosition = window.innerHeight / 1.3;
+                    
+                    if(elementPosition < screenPosition) {
+                        element.style.opacity = '1';
+                        element.style.transform = 'translateY(0)';
+                    }
+                });
+            };
+            
+            window.addEventListener('scroll', animateOnScroll);
+            animateOnScroll(); // Ejecutar al cargar
         });
     </script>
-    
-    <!-- Font Awesome -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </body>
 </html>
