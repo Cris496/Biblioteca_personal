@@ -12,20 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('libros', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->string('titulo');
             $table->text('descripcion')->nullable();
-            $table->string('isbn')->nullable();
-            $table->integer('anio_publicacion')->nullable();
-            $table->unsignedBigInteger('autor_id');
-            $table->unsignedBigInteger('categoria_id');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('autor_id')->constrained('autores')->onDelete('cascade');
+            $table->foreignId('categoria_id')->constrained('categorias')->onDelete('cascade');
+            $table->boolean('disponible')->default(true);  // Agregar esta línea
             $table->string('archivo_pdf')->nullable();
-            $table->string('archivo_epub')->nullable();
             $table->timestamps();
-        
-            // Definir las claves foráneas
-            $table->foreign('autor_id')->references('id')->on('autores')->onDelete('cascade');
-            $table->foreign('categoria_id')->references('id')->on('categorias')->onDelete('cascade');
         });
     }
 

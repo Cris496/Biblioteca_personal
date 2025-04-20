@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
 
             $table->string('nombre');
-            $table->string('apellido');
-            $table->string('nacionalidad');
+            $table->string('apellido')->nullable()->change();
+            $table->string('nacionalidad')->nullable()->change();;
 
 
 

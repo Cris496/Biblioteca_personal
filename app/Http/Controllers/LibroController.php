@@ -2,26 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Libro;
 use App\Models\Autor;
 use App\Models\Categoria;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class LibroController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $libros = Libro::all();
+        $libros = Auth::user()->libros()
+            ->with(['autor', 'categoria'])
+            ->latest()
+            ->get();
+
         return view('libros.index', compact('libros'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $autores = Autor::all();
@@ -29,193 +28,126 @@ class LibroController extends Controller
         return view('libros.create', compact('autores', 'categorias'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'titulo' => 'required',
-            'descripcion' => 'nullable',
-            'isbn' => 'nullable',
-            'anio_publicacion' => 'nullable|integer',
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
             'autor_id' => 'nullable|exists:autores,id',
             'nuevo_autor' => 'nullable|string|max:255',
             'categoria_id' => 'nullable|exists:categorias,id',
             'nueva_categoria' => 'nullable|string|max:255',
             'archivo_pdf' => 'nullable|file|mimes:pdf|max:10240',
-            'archivo_epub' => 'nullable|file|mimes:epub|max:10240',
         ]);
 
-        // Manejo de autor
-        if ($request->nuevo_autor) {
-            $autor = Autor::create([
-                'nombre' => $request->nuevo_autor,
-                'apellido' => 'Desconocido',
-                'nacionalidad' => 'Desconocida',
-            ]);
-        } else {
-            $autor = Autor::find($request->autor_id);
+        // Crear autor si se proporcionó uno nuevo
+        if (!empty($validated['nuevo_autor'])) {
+            $autor = Autor::create(['nombre' => $validated['nuevo_autor']]);
+            $validated['autor_id'] = $autor->id;
         }
 
-        // Manejo de categoría
-        if ($request->nueva_categoria) {
-            $categoria = Categoria::create([
-                'nombre' => $request->nueva_categoria,
-            ]);
-        } else {
-            $categoria = Categoria::find($request->categoria_id);
+        // Crear categoría si se proporcionó una nueva
+        if (!empty($validated['nueva_categoria'])) {
+            $categoria = Categoria::create(['nombre' => $validated['nueva_categoria']]);
+            $validated['categoria_id'] = $categoria->id;
         }
 
-        // Crear el libro
-        $libro = Libro::create([
+        // Verificar que se tenga autor y categoría válidos
+        if (empty($validated['autor_id']) || empty($validated['categoria_id'])) {
+            return back()->withErrors('Debe seleccionar o crear un autor y una categoría.')->withInput();
+        }
+
+        $libro = new Libro([
             'titulo' => $validated['titulo'],
-            'descripcion' => $validated['descripcion'],
-            'isbn' => $validated['isbn'],
-            'anio_publicacion' => $validated['anio_publicacion'],
-            'autor_id' => $autor->id,
-            'categoria_id' => $categoria->id,
+            'descripcion' => $validated['descripcion'] ?? null,
+            'autor_id' => $validated['autor_id'],
+            'categoria_id' => $validated['categoria_id'],
         ]);
+        $libro->user_id = Auth::id();
 
-        // Almacenar archivo PDF
         if ($request->hasFile('archivo_pdf')) {
             $path = $request->file('archivo_pdf')->store('pdfs', 'public');
             $libro->archivo_pdf = $path;
-            
-            if (!Storage::disk('public')->exists($path)) {
-                return back()->with('error', 'Error al guardar el archivo PDF');
-            }
-        }
-
-        // Almacenar archivo EPUB
-        if ($request->hasFile('archivo_epub')) {
-            $path = $request->file('archivo_epub')->store('epubs', 'public');
-            $libro->archivo_epub = $path;
-            
-            if (!Storage::disk('public')->exists($path)) {
-                return back()->with('error', 'Error al guardar el archivo EPUB');
-            }
         }
 
         $libro->save();
 
-        return redirect()->route('libros.index')->with('success', 'Libro agregado exitosamente');
+        return redirect()->route('libros.index')->with('success', 'Libro creado exitosamente');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
+    public function show(Libro $libro)
     {
-        $libro = Libro::findOrFail($id);
+        $this->authorize('view', $libro);
         return view('libros.show', compact('libro'));
     }
 
-    /**
-     * Visualizar archivo PDF
-     */
-    public function verPdf($id)
+    public function edit(Libro $libro)
     {
-        $libro = Libro::findOrFail($id);
-        
-        if (!$libro->archivo_pdf) {
-            abort(404, 'Archivo PDF no encontrado');
-        }
+        $this->authorize('update', $libro);
+        $autores = Autor::all();
+        $categorias = Categoria::all();
+        return view('libros.edit', compact('libro', 'autores', 'categorias'));
+    }
 
-        $path = storage_path('app/public/' . $libro->archivo_pdf);
+    public function update(Request $request, Libro $libro)
+    {
+        $this->authorize('update', $libro);
 
-        if (!file_exists($path)) {
-            abort(404, 'Archivo no existe en el servidor');
-        }
-
-        return response()->file($path, [
-            'Content-Type' => 'application/pdf',
+        $validated = $request->validate([
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
+            'autor_id' => 'required|exists:autores,id',
+            'categoria_id' => 'required|exists:categorias,id',
+            'archivo_pdf' => 'nullable|file|mimes:pdf|max:10240',
+            'nuevo_autor' => 'nullable|string|max:255',
+            'nueva_categoria' => 'nullable|string|max:255',
         ]);
-    }
 
-    /**
-     * Descargar archivo PDF
-     */
-    public function descargarPdf($id)
-    {
-        $libro = Libro::findOrFail($id);
-        
-        if (!$libro->archivo_pdf) {
-            abort(404, 'Archivo PDF no encontrado');
+        // Crear nuevo autor si se proporciona uno
+        if (!empty($validated['nuevo_autor'])) {
+            $autor = Autor::create(['nombre' => $validated['nuevo_autor']]);
+            $validated['autor_id'] = $autor->id;
         }
 
-        $path = storage_path('app/public/' . $libro->archivo_pdf);
-
-        if (!file_exists($path)) {
-            abort(404, 'Archivo no existe en el servidor');
+        // Crear nueva categoría si se proporciona una
+        if (!empty($validated['nueva_categoria'])) {
+            $categoria = Categoria::create(['nombre' => $validated['nueva_categoria']]);
+            $validated['categoria_id'] = $categoria->id;
         }
 
-        return response()->download($path, $libro->titulo . '.pdf');
-    }
-
-    /**
-     * Visualizar archivo EPUB
-     */
-    public function verEpub($id)
-    {
-        $libro = Libro::findOrFail($id);
-        
-        if (!$libro->archivo_epub) {
-            abort(404, 'Archivo EPUB no encontrado');
-        }
-
-        $path = storage_path('app/public/' . $libro->archivo_epub);
-
-        if (!file_exists($path)) {
-            abort(404, 'Archivo no existe en el servidor');
-        }
-
-        return response()->file($path, [
-            'Content-Type' => 'application/epub+zip',
+        // Actualizar el libro con los datos validados
+        $libro->update([
+            'titulo' => $validated['titulo'],
+            'descripcion' => $validated['descripcion'] ?? null,
+            'autor_id' => $validated['autor_id'],
+            'categoria_id' => $validated['categoria_id'],
         ]);
-    }
 
-    /**
-     * Descargar archivo EPUB
-     */
-    public function descargarEpub($id)
-    {
-        $libro = Libro::findOrFail($id);
-        
-        if (!$libro->archivo_epub) {
-            abort(404, 'Archivo EPUB no encontrado');
+        // Subir archivo PDF si es necesario
+        if ($request->hasFile('archivo_pdf')) {
+            // Eliminar el archivo PDF anterior si existe
+            if ($libro->archivo_pdf) {
+                Storage::disk('public')->delete($libro->archivo_pdf);
+            }
+
+            $path = $request->file('archivo_pdf')->store('pdfs', 'public');
+            $libro->archivo_pdf = $path;
+            $libro->save();
         }
 
-        $path = storage_path('app/public/' . $libro->archivo_epub);
+        return redirect()->route('libros.index')->with('success', 'Libro actualizado exitosamente');
+    }
 
-        if (!file_exists($path)) {
-            abort(404, 'Archivo no existe en el servidor');
+    public function destroy(Libro $libro)
+    {
+        $this->authorize('delete', $libro);
+
+        if ($libro->archivo_pdf) {
+            Storage::disk('public')->delete($libro->archivo_pdf);
         }
 
-        return response()->download($path, $libro->titulo . '.epub');
-    }
+        $libro->delete();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('libros.index')->with('success', 'Libro eliminado exitosamente');
     }
 }

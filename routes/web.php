@@ -6,6 +6,17 @@ use App\Http\Controllers\LibroController;
 use App\Http\Controllers\PrestamoController;
 use App\Http\Controllers\HomeController;
 
+Route::middleware('auth')->group(function () {
+    Route::get('prestamos', [PrestamoController::class, 'index'])->name('prestamos.index');
+    Route::get('prestamos/realizados', [PrestamoController::class, 'prestamosRealizados'])->name('prestamos.realizados');
+    Route::get('prestamos/create', [PrestamoController::class, 'create'])->name('prestamos.create'); // Esta es la ruta correcta para mostrar el formulario de creación
+    Route::post('prestamos', [PrestamoController::class, 'store'])->name('prestamos.store'); // Esta ruta se usa para guardar el préstamo después de llenar el formulario
+    Route::post('prestamos/{prestamo}/devolver', [PrestamoController::class, 'devolver'])->name('prestamos.devolver');
+    Route::get('prestamos/{prestamo}', [PrestamoController::class, 'show'])->name('prestamos.show');
+});
+
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -22,6 +33,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::resource('libros', LibroController::class)->middleware('auth');
 // Sistema de autenticación
 Auth::routes(['register' => true]); // Habilitar registro
 

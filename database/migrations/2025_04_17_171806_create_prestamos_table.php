@@ -9,18 +9,19 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('prestamos', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('libro_id');
-            $table->date('fecha_prestamo');
-            $table->date('fecha_devolucion')->nullable();
-            $table->timestamps();
-        
-            $table->foreign('libro_id')->references('id')->on('libros')->onDelete('cascade');
-        });
-    }
+    public function up()
+{
+    Schema::create('prestamos', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Usuario que presta
+        $table->foreignId('libro_id')->constrained()->onDelete('cascade'); // Libro prestado
+        $table->foreignId('user_recibe_id')->constrained('users')->onDelete('cascade'); // Usuario que recibe el libro
+        $table->date('fecha_prestamo');
+        $table->date('fecha_devolucion')->nullable();
+        $table->boolean('devuelto')->default(false);
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.
