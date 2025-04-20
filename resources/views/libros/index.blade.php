@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -42,7 +42,7 @@
             <div class="action-bar">
                 <div class="action-buttons">
                     <a href="{{ route('dashboard') }}" class="nav-btn">
-                        <i class="fas fa-book"></i>Inicio
+                        <i class="fas fa-book"></i> Inicio
                     </a>
                     <a href="{{ route('prestamos.index') }}" class="nav-btn">
                         <i class="fas fa-exchange-alt"></i> Préstamos
@@ -99,26 +99,32 @@
                                 </span>
                                 <div class="book-actions">
                                     @if($libro->estaPrestado())
-                                        <!-- Si está prestado, mostramos un mensaje o deshabilitamos el enlace -->
+                                        <!-- Si está prestado, mostramos un mensaje o deshabilitamos los enlaces -->
                                         <button class="action-btn view-btn" disabled>
                                             <i class="fas fa-eye"></i> No disponible
                                         </button>
+                                        <button class="action-btn edit-btn" disabled>
+                                            <i class="fas fa-edit"></i> No disponible
+                                        </button>
+                                        <button class="action-btn delete-btn" disabled>
+                                            <i class="fas fa-trash"></i> No disponible
+                                        </button>
                                     @else
-                                        <!-- Si no está prestado, mostramos el enlace para ver detalles -->
+                                        <!-- Si no está prestado, mostramos los enlaces para ver detalles, editar y eliminar -->
                                         <a href="{{ route('libros.show', $libro->id) }}" class="action-btn view-btn">
                                             <i class="fas fa-eye"></i> Ver Detalles
                                         </a>
+                                        <a href="{{ route('libros.edit', $libro->id) }}" class="action-btn edit-btn">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </a>
+                                        <form action="{{ route('libros.destroy', $libro->id) }}" method="POST" style="display: inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="action-btn delete-btn" onclick="return confirm('¿Eliminar este libro?')">
+                                                <i class="fas fa-trash"></i> Eliminar
+                                            </button>
+                                        </form>
                                     @endif
-                                    <a href="{{ route('libros.edit', $libro->id) }}" class="action-btn edit-btn">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="{{ route('libros.destroy', $libro->id) }}" method="POST" style="display: inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="action-btn delete-btn" onclick="return confirm('¿Eliminar este libro?')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
                                 </div>
                             </div>
                         </div>
