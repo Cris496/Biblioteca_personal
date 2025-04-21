@@ -440,40 +440,22 @@
                         </div>
                     @endif
                     Bienvenido de vuelta, <strong>{{ Auth::user()->name }}</strong>. Explora y gestiona tu colección literaria.
-                </div>
-            </div>
-            
-            <div class="dashboard-grid">
-                <div class="dashboard-card">
-                    <div class="card-icon">📚</div>
-                    <h3>Tu colección</h3>
-                    <p>Gestiona todos los libros que tienes en tu biblioteca personal.</p>
-                    <a href="#" class="btn btn-outline">Ver colección</a>
-                </div>
-                
-                <div class="dashboard-card">
-                    <div class="card-icon">🔍</div>
-                    <h3>Explorar</h3>
-                    <p>Descubre nuevos libros para añadir a tu colección.</p>
-                    <a href="{{ route('libros.index') }}" class="btn btn-outline">Buscar ahora</a>
-                </div>
-                
-                <div class="dashboard-card">
-                    <div class="card-icon">📊</div>
-                    <h3>Estadísticas</h3>
-                    <p>Visualiza tus hábitos de lectura y progreso.</p>
-                    <a href="#" class="btn btn-outline">Ver estadísticas</a>
-                </div>
-            </div>
-            
+                    <div class="dashboard-container">
+    <div class="dashboard-card small-card">
+        <div class="card-icon">🔍</div>
+        <h3>Mis libros</h3>
+        <p>Mira tus libros guardados</p>
+        <a href="{{ route('libros.index') }}" class="btn btn-outline">Ir ahora</a>
+    </div>
+</div>
+
             <!-- Botones de acción principales -->
             <div class="action-buttons">
                 <a href="{{ route('libros.index') }}" class="action-btn btn-books" id="books-btn">
                     <i class="fas fa-book"></i> Ir a mis libros
-                </a>
-                <a href="#" class="action-btn btn-loans" id="loans-btn">
-                    <i class="fas fa-exchange-alt"></i> Ir a mis préstamos
-                </a>
+                    <a href="{{ route('prestamos.index') }}" class="action-btn btn-loans nav-btn" id="loans-btn">
+    Ir a mis préstamos
+</a>
             </div>
         </div>
     </main>
@@ -486,9 +468,7 @@
             </div>
             <p>La plataforma perfecta para amantes de los libros</p>
             <div class="social-icons">
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
+                
             </div>
             <p>© 2023 Codexa. Todos los derechos reservados.</p>
         </div>
