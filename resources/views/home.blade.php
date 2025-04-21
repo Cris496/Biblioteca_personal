@@ -59,6 +59,18 @@
                 transform: translateY(0);
             }
         }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes loading {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
         /* HEADER */
         .main-header {
@@ -132,6 +144,31 @@
         .main-content {
             padding-top: 100px;
             min-height: 100vh;
+            position: relative;
+        }
+        
+        .background-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9));
+            z-index: -1;
+        }
+        
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -2;
+            animation: pulse 20s infinite ease-in-out;
         }
 
         /* DASHBOARD STYLES */
@@ -139,7 +176,8 @@
             width: 90%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 60px 20px;
+            position: relative;
         }
         
         .dashboard-header {
@@ -150,6 +188,7 @@
         .dashboard-header h1 {
             font-size: 42px;
             margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
         
         .divider {
@@ -186,6 +225,7 @@
             border-radius: 5px;
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 215, 0, 0.1);
+            backdrop-filter: blur(5px);
             opacity: 0;
             transform: translateY(20px);
         }
@@ -199,6 +239,7 @@
             transform: translateY(-10px) !important;
             box-shadow: 0 15px 30px rgba(255, 215, 0, 0.1);
             border-color: rgba(255, 215, 0, 0.3);
+            background: rgba(30, 30, 30, 0.9);
         }
         
         .card-icon {
@@ -212,95 +253,72 @@
             margin-bottom: 40px;
             font-size: 18px;
             color: #ccc;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
         }
         
-        /* BOOK COLLECTION */
-        .book-collection {
-            margin-top: 50px;
-        }
-        
-        .collection-header {
+        /* ACTION BUTTONS */
+        .action-buttons {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        
-        .books-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        
-        .book-card {
-            background: rgba(30, 30, 30, 0.8);
-            border-radius: 5px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 215, 0, 0.1);
-        }
-        
-        .book-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.1);
-        }
-        
-        .book-cover {
-            width: 100%;
-            height: 250px;
-            background-color: #222;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            color: #FFD700;
-            font-size: 50px;
+            gap: 20px;
+            margin: 60px 0 40px;
+            flex-wrap: wrap;
         }
         
-        .book-info {
-            padding: 15px;
-        }
-        
-        .book-title {
+        .action-btn {
+            padding: 15px 30px;
+            border-radius: 6px;
             font-weight: 600;
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
         }
         
-        .book-author {
-            color: #999;
-            font-size: 14px;
-            margin-bottom: 10px;
+        .action-btn.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
         
-        .book-status {
-            display: inline-block;
-            padding: 3px 8px;
-            font-size: 12px;
-            border-radius: 3px;
+        .action-btn:nth-child(1) { transition-delay: 0.1s; }
+        .action-btn:nth-child(2) { transition-delay: 0.3s; }
+        
+        .action-btn:hover {
+            transform: translateY(-5px) !important;
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
         }
         
-        .status-read {
-            background-color: rgba(0, 255, 0, 0.1);
-            color: #0f0;
+        .btn-books {
+            background-color: #FFD700;
+            color: #000;
         }
         
-        .status-reading {
-            background-color: rgba(255, 215, 0, 0.1);
+        .btn-books:hover {
+            background-color: #000;
             color: #FFD700;
+            border: 2px solid #FFD700;
         }
         
-        .status-unread {
-            background-color: rgba(255, 0, 0, 0.1);
-            color: #f00;
+        .btn-loans {
+            background-color: transparent;
+            color: #FFD700;
+            border: 2px solid #FFD700;
         }
-
+        
+        .btn-loans:hover {
+            background-color: #FFD700;
+            color: #000;
+        }
+        
         /* FOOTER */
         .main-footer {
             background: #000;
             padding: 40px 0 0;
             border-top: 1px solid rgba(255, 215, 0, 0.1);
+            position: relative;
         }
         
         .footer-content {
@@ -353,10 +371,9 @@
                 grid-template-columns: 1fr;
             }
             
-            .collection-header {
+            .action-buttons {
                 flex-direction: column;
-                gap: 15px;
-                align-items: flex-start;
+                align-items: center;
             }
         }
         
@@ -373,48 +390,58 @@
                 padding: 10px 15px;
                 font-size: 12px;
             }
+            
+            .action-btn {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
-<header class="main-header">
-    <div class="header-content">
-        <div class="logo">
-            <span class="gold-text">COD</span>EXA
+<body>
+    <header class="main-header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="gold-text">COD</span>EXA
+            </div>
+            <div class="auth-buttons">
+                @auth
+                    <span class="user-name">
+                        <i class="fas fa-user-circle me-1"></i> {{ Auth::user()->name }}
+                    </span>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="btn btn-outline ms-3">
+                            <i class="fas fa-sign-out-alt me-1"></i> Cerrar sesión
+                        </button>
+                    </form>
+                @endauth
+            </div>
         </div>
-        <div class="auth-buttons">
-            @auth
-                <span class="user-name">
-                    <i class="fas fa-user-circle me-1"></i> {{ Auth::user()->name }}
-                </span>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="btn btn-outline ms-3">
-                        <i class="fas fa-sign-out-alt me-1"></i> Cerrar sesión
-                    </button>
-                </form>
-            @endauth
-        </div>
-    </div>
-</header>
+    </header>
 
     <!-- Contenido Principal -->
     <main class="main-content">
+        <div class="background-image"></div>
+        <div class="background-overlay"></div>
+        
         <div class="dashboard-container">
             <div class="dashboard-header">
-                <h1>Tu <span class="gold-text">Dashboard</span></h1>
+                <h1>Tu <span class="gold-text">Biblioteca Personal</span></h1>
                 <div class="divider">
                     <div class="line"></div>
                     <div class="diamond"></div>
                     <div class="line"></div>
                 </div>
                 <div class="welcome-message">
-    @if (session('status'))
-        <div class="alert alert-success" role="alert">
-            {{ session('status') }}
-        </div>
-    @endif
-    Bienvenido de vuelta, <strong>{{ Auth::user()->name }}, aqui puedes gestionar tu coleccion</strong>.
-</div>
+                    @if (session('status'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+                    Bienvenido de vuelta, <strong>{{ Auth::user()->name }}</strong>. Explora y gestiona tu colección literaria.
+                </div>
+            </div>
             
             <div class="dashboard-grid">
                 <div class="dashboard-card">
@@ -426,10 +453,9 @@
                 
                 <div class="dashboard-card">
                     <div class="card-icon">🔍</div>
-                    <h3>Mis libros</h3>
-                    <p>Mis libros.</p>
+                    <h3>Explorar</h3>
+                    <p>Descubre nuevos libros para añadir a tu colección.</p>
                     <a href="{{ route('libros.index') }}" class="btn btn-outline">Buscar ahora</a>
-
                 </div>
                 
                 <div class="dashboard-card">
@@ -440,52 +466,14 @@
                 </div>
             </div>
             
-            <!-- Book Collection Section -->
-            <div class="book-collection">
-                <div class="collection-header">
-                    <h2>Tus <span class="gold-text">libros recientes</span></h2>
-                    <a href="#" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Añadir libro
-                    </a>
-                </div>
-                
-                <div class="books-grid">
-                    <div class="book-card">
-                        <div class="book-cover">📖</div>
-                        <div class="book-info">
-                            <h4 class="book-title">Cien años de soledad</h4>
-                            <p class="book-author">Gabriel García Márquez</p>
-                            <span class="book-status status-read">Leído</span>
-                        </div>
-                    </div>
-                    
-                    <div class="book-card">
-                        <div class="book-cover">📖</div>
-                        <div class="book-info">
-                            <h4 class="book-title">1984</h4>
-                            <p class="book-author">George Orwell</p>
-                            <span class="book-status status-reading">Leyendo</span>
-                        </div>
-                    </div>
-                    
-                    <div class="book-card">
-                        <div class="book-cover">📖</div>
-                        <div class="book-info">
-                            <h4 class="book-title">El Principito</h4>
-                            <p class="book-author">Antoine de Saint-Exupéry</p>
-                            <span class="book-status status-unread">Por leer</span>
-                        </div>
-                    </div>
-                    
-                    <div class="book-card">
-                        <div class="book-cover">📖</div>
-                        <div class="book-info">
-                            <h4 class="book-title">Don Quijote de la Mancha</h4>
-                            <p class="book-author">Miguel de Cervantes</p>
-                            <span class="book-status status-read">Leído</span>
-                        </div>
-                    </div>
-                </div>
+            <!-- Botones de acción principales -->
+            <div class="action-buttons">
+                <a href="{{ route('libros.index') }}" class="action-btn btn-books" id="books-btn">
+                    <i class="fas fa-book"></i> Ir a mis libros
+                </a>
+                <a href="#" class="action-btn btn-loans" id="loans-btn">
+                    <i class="fas fa-exchange-alt"></i> Ir a mis préstamos
+                </a>
             </div>
         </div>
     </main>
@@ -515,6 +503,7 @@
         // Animación de las tarjetas al hacer scroll
         document.addEventListener('DOMContentLoaded', function() {
             const cards = document.querySelectorAll('.dashboard-card');
+            const actionButtons = document.querySelectorAll('.action-btn');
             
             // Función para verificar si un elemento está visible
             function isElementInViewport(el) {
@@ -526,7 +515,7 @@
             }
             
             // Función para manejar el scroll
-            function checkCards() {
+            function checkVisibility() {
                 cards.forEach((card, index) => {
                     if (isElementInViewport(card)) {
                         setTimeout(() => {
@@ -534,12 +523,20 @@
                         }, index * 200);
                     }
                 });
+                
+                actionButtons.forEach((btn, index) => {
+                    if (isElementInViewport(btn)) {
+                        setTimeout(() => {
+                            btn.classList.add('visible');
+                        }, index * 200 + 300);
+                    }
+                });
             }
             
             // Verificar al cargar y al hacer scroll
-            window.addEventListener('load', checkCards);
-            window.addEventListener('scroll', checkCards);
-            checkCards(); // Verificar inicialmente
+            window.addEventListener('load', checkVisibility);
+            window.addEventListener('scroll', checkVisibility);
+            checkVisibility(); // Verificar inicialmente
         });
     </script>
 </body>

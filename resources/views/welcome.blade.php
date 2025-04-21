@@ -495,10 +495,7 @@
             </h1>
             <p class="hero-subtitle">Una solución simple y elegante para catalogar tus libros, llevar registro de tus lecturas y descubrir nuevas recomendaciones.</p>
             <div class="hero-buttons">
-                @guest
-                    <a href="{{ route('login') }}" class="btn btn-primary">Comienza ahora</a>
-                    <a href="#features" class="btn btn-outline">Conoce más</a>
-                @endguest
+                
             </div>
         </div>
         <div class="scroll-indicator">
